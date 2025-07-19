@@ -106,5 +106,15 @@ router.post('/add-employee', async (req, res) => {
     res.status(500).json({ error: "Database operation failed" });
   }
 });
+router.get('/search-customer', async (req, res) => {
+  const { field, query } = req.query;
+  try {
+    const result = await pool.query(`SELECT * FROM customer WHERE ${field} = $1`, [query]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Search error:", err);
+    res.status(500).json({ error: "Search failed" });
+  }
+});
 
 module.exports = router;
