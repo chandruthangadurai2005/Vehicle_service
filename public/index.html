@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vehicle Service Center</title>
+  <link rel="stylesheet" href="main.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <h1>Vehicle Service Center</h1>
+    <ul class="view-buttons">
+      <li><button data-target="customer-section">Add Customer</button></li>
+      <li><button data-target="vehicle-section">Add Vehicle</button></li>
+      <li><button data-target="employee-section">Add Employee</button></li>
+      <li><button data-target="service-section">Add Service</button></li>
+      <li><button data-target="inventory-section">Add Inventory</button></li>
+      <li><button data-target="billing-section">Add Billing</button></li>
+      <li><button data-target="search-section">Search</button></li>
+      <li><button data-target="update-section">Update</button></li>
+      <li><button data-target="delete-section">Delete</button></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <!-- Add Customer -->
+    <section class="form-section" id="customer-section">
+      <h2>Add Customer</h2>
+      <form id="customer-form">
+        <label>Name:</label>
+        <input type="text" name="name" required />
+        <label>Phone:</label>
+        <input type="text" name="phone" required />
+        <label>Email:</label>
+        <input type="email" name="email" required />
+        <button type="submit">Add Customer</button>
+      </form>
+    </section>
+
+    <!-- Add Vehicle -->
+    <section class="form-section" id="vehicle-section" style="display:none;">
+      <h2>Add Vehicle</h2>
+      <form id="vehicle-form">
+        <label>Customer ID:</label>
+        <input type="number" name="customer_id" required />
+        <label>Model:</label>
+        <input type="text" name="model" required />
+        <label>Number:</label>
+        <input type="text" name="number" required />
+        <button type="submit">Add Vehicle</button>
+      </form>
+    </section>
+
+    <!-- Add Employee -->
+    <section class="form-section" id="employee-section" style="display:none;">
+      <h2>Add Employee</h2>
+      <form id="employee-form">
+        <label>Name:</label>
+        <input type="text" name="name" required />
+        <label>Role:</label>
+        <input type="text" name="role" required />
+        <label>Phone:</label>
+        <input type="text" name="phone" required />
+        <button type="submit">Add Employee</button>
+      </form>
+    </section>
+
+    <!-- Add Service -->
+    <section class="form-section" id="service-section" style="display:none;">
+      <h2>Add Service</h2>
+      <form id="service-form">
+        <label>Vehicle ID:</label>
+        <input type="number" name="vehicle_id" required />
+        <label>Employee ID:</label>
+        <input type="number" name="employee_id" required />
+        <label>Description:</label>
+        <input type="text" name="description" required />
+        <label>Cost:</label>
+        <input type="number" name="cost" required />
+        <button type="submit">Add Service</button>
+      </form>
+    </section>
+
+    <!-- Add Inventory -->
+    <section class="form-section" id="inventory-section" style="display:none;">
+      <h2>Add Inventory</h2>
+      <form id="inventory-form">
+        <label>Item Name:</label>
+        <input type="text" name="item_name" required />
+        <label>Quantity:</label>
+        <input type="number" name="quantity" required />
+        <label>Cost:</label>
+        <input type="number" name="cost" required />
+        <button type="submit">Add Inventory</button>
+      </form>
+    </section>
+
+    <!-- Add Billing -->
+    <section class="form-section" id="billing-section" style="display:none;">
+      <h2>Add Billing</h2>
+      <form id="billing-form">
+        <label>Customer ID:</label>
+        <input type="number" name="customer_id" required />
+        <label>Service ID:</label>
+        <input type="number" name="service_id" required />
+        <label>Total Amount:</label>
+        <input type="number" name="total_amount" required />
+        <button type="submit">Add Billing</button>
+      </form>
+    </section>
+
+    <!-- Search -->
+    <section class="form-section" id="search-section" style="display:none;">
+      <h2>Search Records</h2>
+      <form id="search-form">
+        <label>Search By:</label>
+        <select id="search-type" name="type" required>
+          <option value="customer">Customer</option>
+          <option value="vehicle">Vehicle</option>
+          <option value="employee">Employee</option>
+          <option value="service">Service</option>
+          <option value="inventory">Inventory</option>
+          <option value="billing">Billing</option>
+        </select>
+        <label>Query (ID or name):</label>
+        <input type="text" id="search-query" name="query" required />
+        <button type="submit">Search</button>
+      </form>
+    </section>
+
+    <!-- Update -->
+    <section class="form-section" id="update-section" style="display:none;">
+      <h2>Update Record</h2>
+      <form id="update-form">
+        <label>Table Name:</label>
+        <select name="table" required>
+          <option value="customer">Customer</option>
+          <option value="vehicle">Vehicle</option>
+          <option value="employee">Employee</option>
+          <option value="service">Service</option>
+          <option value="inventory">Inventory</option>
+          <option value="billing">Billing</option>
+        </select>
+        <label>Record ID:</label>
+        <input type="number" name="id" required />
+        <label>Field to Update:</label>
+        <input type="text" name="field" required />
+        <label>New Value:</label>
+        <input type="text" name="value" required />
+        <button type="submit">Update</button>
+      </form>
+    </section>
+
+    <!-- Delete -->
+    <section class="form-section" id="delete-section" style="display:none;">
+      <h2>Delete Record</h2>
+      <form id="delete-form">
+        <label>Table Name:</label>
+        <select name="table" required>
+          <option value="customer">Customer</option>
+          <option value="vehicle">Vehicle</option>
+          <option value="employee">Employee</option>
+          <option value="service">Service</option>
+          <option value="inventory">Inventory</option>
+          <option value="billing">Billing</option>
+        </select>
+        <label>Record ID:</label>
+        <input type="number" name="id" required />
+        <button type="submit">Delete</button>
+      </form>
+    </section>
+
+    <!-- Results Table -->
+    <section class="form-section" id="results">
+      <h2>Results</h2>
+      <table id="result-table" border="1">
+        <thead></thead>
+        <tbody id="result-body"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
