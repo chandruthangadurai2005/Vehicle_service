@@ -1,76 +1,99 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function() {
+  // UI Setup
   const sections = document.querySelectorAll(".form-section");
   const viewButtons = document.querySelectorAll(".view-buttons button");
-  const resultTable = document.getElementById("result-table");
-  const resultBody = document.getElementById("result-body");
-
-  viewButtons.forEach((btn) => {
+  
+  viewButtons.forEach(btn => {
     btn.addEventListener("click", () => {
-      sections.forEach((sec) => sec.style.display = "none");
-      const target = btn.getAttribute("data-target");
-      document.getElementById(target).style.display = "block";
+      sections.forEach(sec => sec.style.display = "none");
+      document.getElementById(btn.dataset.target).style.display = "block";
     });
   });
 
-  const handleFormSubmit = async (formId, apiPath, method = "POST") => {
+  // Form Handler
+  const handleForm = async (formId, endpoint, method = "POST") => {
     const form = document.getElementById(formId);
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const data = Object.fromEntries(new FormData(form));
       try {
-        const response = await fetch(`/api/${apiPath}`, {
+        const data = Object.fromEntries(new FormData(form));
+        const res = await fetch(`/api/${endpoint}`, {
           method,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: JSON.stringify(data)
         });
-        const result = await response.json();
-        alert(result.message || "Success");
+        const result = await res.json();
+        showAlert(result.message || "Operation successful");
         form.reset();
       } catch (err) {
+        showAlert("Operation failed", "error");
         console.error(err);
-        alert("An error occurred");
       }
     });
   };
 
-  handleFormSubmit("customer-form", "add-customer");
-  handleFormSubmit("vehicle-form", "add-vehicle");
-  handleFormSubmit("employee-form", "add-employee");
-  handleFormSubmit("service-form", "add-service");
-  handleFormSubmit("inventory-form", "add-inventory");
-  handleFormSubmit("billing-form", "add-billing");
-  handleFormSubmit("update-form", "update", "PUT");
-  handleFormSubmit("delete-form", "delete", "DELETE");
+  // Register forms
+  handleForm("customer-form", "add-customer");
+  handleForm("vehicle-form", "add-vehicle");
+  handleForm("employee-form", "add-employee");
+  handleForm("service-form", "add-service");
+  handleForm("inventory-form", "add-inventory");
+  handleForm("billing-form", "add-billing");
+  handleForm("update-form", "update-service", "PUT");
+  handleForm("delete-form", "delete-vehicle", "DELETE");
 
+  // View Data Functions
+  async function viewData(table) {
+    try {
+      const res = await fetch(`/api/${table}`);
+      const data = await res.json();
+      renderTable(data);
+    } catch (err) {
+      showAlert(`Failed to load ${table}`, "error");
+      console.error(err);
+    }
+  }
+
+  // Search Functionality
   document.getElementById("search-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const type = document.getElementById("search-type").value;
     const query = document.getElementById("search-query").value;
+    
     try {
-      const response = await fetch(`/api/search?type=${type}&query=${query}`);
-      const result = await response.json();
-      renderTable(result);
+      const res = await fetch(`/api/search-${type}?field=name&query=${query}`);
+      const data = await res.json();
+      renderTable(data);
     } catch (err) {
+      showAlert("Search failed", "error");
       console.error(err);
-      alert("Search failed");
     }
   });
 
-  const renderTable = (data) => {
-    resultBody.innerHTML = "";
+  // Helper Functions
+  function renderTable(data) {
+    const table = document.getElementById("result-table");
+    const tbody = document.getElementById("result-body");
+    
     if (!data || data.length === 0) {
-      resultBody.innerHTML = "<tr><td colspan='10'>No data found</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='10'>No data found</td></tr>";
       return;
     }
 
     const headers = Object.keys(data[0]);
-    resultTable.innerHTML = `
+    table.innerHTML = `
       <thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead>
-      <tbody id="result-body">
-        ${data.map(row => `
-          <tr>${headers.map(h => `<td>${row[h]}</td>`).join("")}</tr>
-        `).join("")}
-      </tbody>
+      <tbody>${data.map(row => 
+        `<tr>${headers.map(h => `<td>${row[h]}</td>`).join("")}</tr>`
+      ).join("")}</tbody>
     `;
-  };
+  }
+
+  function showAlert(message, type = "success") {
+    const alert = document.createElement("div");
+    alert.className = `alert ${type}`;
+    alert.textContent = message;
+    document.body.appendChild(alert);
+    setTimeout(() => alert.remove(), 3000);
+  }
 });
