@@ -80,5 +80,15 @@ router.delete('/delete-vehicle/:id', async (req, res) => {
     handleDBError(err, res);
   }
 });
+// Example: inside api.js
+router.get('/customer', async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM customer');
+    res.json(result.rows);
+  } catch (error) {
+    console.error("❌ Error fetching customers:", error);  // Add this line
+    res.status(500).json({ error: "Database operation failed" });
+  }
+});
 
 module.exports = router;
