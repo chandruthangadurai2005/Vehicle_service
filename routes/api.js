@@ -93,6 +93,8 @@ router.get('/customer', async (req, res) => {
 router.post('/add-employee', async (req, res) => {
   const { emp_id, branch_id, role_id, phone_no, date_of_joining } = req.body;
   try {
+    console.log("Received data:", req.body);
+
     await db.query(
       `INSERT INTO employee (emp_id, branch_id, role_id, phone_no, date_of_joining)
        VALUES ($1, $2, $3, $4, $5)`,
