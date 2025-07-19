@@ -474,23 +474,22 @@
     };
 
     // Render data table
-    function renderTable(data) {
-      const table = document.getElementById("result-table");
-      const tbody = document.getElementById("result-body");
-      
-      if (!data || data.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='10'>No data found</td></tr>";
-        return;
-      }
+   function renderTable(data) {
+  const table = document.getElementById("result-table");
+  if (!Array.isArray(data) || data.length === 0) {
+    table.innerHTML = "<tr><td colspan='10'>No data found</td></tr>";
+    return;
+  }
 
-      const headers = Object.keys(data[0]);
-      table.innerHTML = `
-        <thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead>
-        <tbody>${data.map(row => 
-          `<tr>${headers.map(h => `<td>${row[h]}</td>`).join("")}</tr>`
-        ).join("")}</tbody>
-      `;
-    }
+  const headers = Object.keys(data[0]);
+  table.innerHTML = `
+    <thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead>
+    <tbody>
+      ${data.map(row => `<tr>${headers.map(h => `<td>${row[h]}</td>`).join("")}</tr>`).join("")}
+    </tbody>
+  `;
+}
+
 
     // Alert message
     function showAlert(message, type = "success") {
