@@ -90,5 +90,19 @@ router.get('/customer', async (req, res) => {
     res.status(500).json({ error: "Database operation failed" });
   }
 });
+router.post('/add-employee', async (req, res) => {
+  const { emp_id, branch_id, role_id, phone_no, date_of_joining } = req.body;
+  try {
+    await db.query(
+      `INSERT INTO employee (emp_id, branch_id, role_id, phone_no, date_of_joining)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [emp_id, branch_id, role_id, phone_no, date_of_joining]
+    );
+    res.json({ message: "Employee added successfully" });
+  } catch (error) {
+    console.error("❌ Error adding employee:", error);
+    res.status(500).json({ error: "Database operation failed" });
+  }
+});
 
 module.exports = router;
