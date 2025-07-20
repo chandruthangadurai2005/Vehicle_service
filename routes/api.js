@@ -38,11 +38,13 @@ entities.forEach(entity => {
 });
 
 // ✅ Universal Search Route
+// Dynamic universal search route
 router.get('/search/:entity', async (req, res) => {
   const { entity } = req.params;
   const { field, query } = req.query;
 
   const allowedEntities = ['customer', 'vehicles', 'employee', 'service', 'inventory', 'billing'];
+  const allowedFields = ['name', 'phone_no', 'email', 'vehicle_id', 'customer_id', 'emp_id']; // add as needed
 
   if (!allowedEntities.includes(entity) || !field || !query) {
     return res.status(400).json({ message: "Invalid search parameters." });
@@ -57,6 +59,7 @@ router.get('/search/:entity', async (req, res) => {
     res.status(500).json({ message: "Search failed." });
   }
 });
+
 
 // Special route (custom update for service)
 router.put('/update-service/:id', async (req, res) => {
