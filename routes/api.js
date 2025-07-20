@@ -2,29 +2,24 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// Helper function for error handling
+// Helper for handling DB errors
 const handleDBError = (err, res) => {
   console.error('Database error:', err);
   res.status(500).json({ error: 'Database operation failed' });
 };
 
-// CRUD operations for all entities
-const entities = [
-  'customer', 'vehicles', 'employee', 'service', 'inventory', 'billing'
-];
+// Entity list
+const entities = ['customer', 'vehicles', 'employee', 'service', 'inventory', 'billing'];
 
+// CRUD for all entities
 entities.forEach(entity => {
   // Create
   router.post(`/add-${entity}`, async (req, res) => {
     try {
       const columns = Object.keys(req.body).join(', ');
       const values = Object.values(req.body);
-      const placeholders = values.map((_, i) => `$${i+1}`).join(', ');
-      
-      await db.query(
-        `INSERT INTO ${entity} (${columns}) VALUES (${placeholders})`,
-        values
-      );
+      const placeholders = values.map((_, i) => `$${i + 1}`).join(', ');
+      await db.query(`INSERT INTO ${entity} (${columns}) VALUES (${placeholders})`, values);
       res.json({ message: `${entity} added successfully` });
     } catch (err) {
       handleDBError(err, res);
@@ -40,36 +35,34 @@ entities.forEach(entity => {
       handleDBError(err, res);
     }
   });
+});
 
-  // Search
- router.get('/search-:entity', async (req, res) => {
+// ✅ Universal Search Route
+router.get('/search/:entity', async (req, res) => {
   const { entity } = req.params;
   const { field, query } = req.query;
 
+  const allowedEntities = ['customer', 'vehicles', 'employee', 'service', 'inventory', 'billing'];
+
+  if (!allowedEntities.includes(entity) || !field || !query) {
+    return res.status(400).json({ message: "Invalid search parameters." });
+  }
+
   try {
-    const allowedEntities = ['customer', 'vehicles', 'employee', 'service', 'inventory', 'billing'];
-    const allowedFields = ['name', 'id', 'phone_no', 'email', 'vehicle_id', 'customer_id']; // adjust as needed
-
-    if (!allowedEntities.includes(entity) || !field || !query) {
-      return res.status(400).json({ message: "Invalid search parameters." });
-    }
-
-    // Sanitize input by preventing SQL injection
     const sql = `SELECT * FROM ${entity} WHERE ${field}::text ILIKE $1`;
     const result = await db.query(sql, [`%${query}%`]);
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
+    console.error("Search error:", err);
     res.status(500).json({ message: "Search failed." });
   }
 });
 
-
-// Special routes
+// Special route (custom update for service)
 router.put('/update-service/:id', async (req, res) => {
+  const { id } = req.params;
+  const { description, emp_id } = req.body;
   try {
-    const { id } = req.params;
-    const { description, emp_id } = req.body;
     await db.query(
       'UPDATE service SET description = $1, emp_id = $2 WHERE service_id = $3',
       [description, emp_id, id]
@@ -80,51 +73,6 @@ router.put('/update-service/:id', async (req, res) => {
   }
 });
 
-router.delete('/delete-vehicle/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    await db.query('DELETE FROM vehicles WHERE vehicle_id = $1', [id]);
-    res.json({ message: 'Vehicle deleted successfully' });
-  } catch (err) {
-    handleDBError(err, res);
-  }
-});
-// Example: inside api.js
-router.get('/customer', async (req, res) => {
-  try {
-    const result = await db.query('SELECT * FROM customer');
-    res.json(result.rows);
-  } catch (error) {
-    console.error("❌ Error fetching customers:", error);  // Add this line
-    res.status(500).json({ error: "Database operation failed" });
-  }
-});
-router.post('/add-employee', async (req, res) => {
-  const { emp_id, branch_id, role_id, phone_no, date_of_joining } = req.body;
-  try {
-    console.log("Received data:", req.body);
-
-    await db.query(
-      `INSERT INTO employee (emp_id, branch_id, role_id, phone_no, date_of_joining)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [emp_id, branch_id, role_id, phone_no, date_of_joining]
-    );
-    res.json({ message: "Employee added successfully" });
-  } catch (error) {
-    console.error("❌ Error adding employee:", error);
-    res.status(500).json({ error: "Database operation failed" });
-  }
-});
-router.get('/search-customer', async (req, res) => {
-  const { field, query } = req.query;
-  try {
-    const result = await pool.query(`SELECT * FROM customer WHERE ${field} = $1`, [query]);
-    res.json(result.rows);
-  } catch (err) {
-    console.error("Search error:", err);
-    res.status(500).json({ error: "Search failed" });
-  }
-});
 // Universal DELETE
 router.delete('/delete/:table/:key/:id', async (req, res) => {
   const { table, key, id } = req.params;
@@ -142,9 +90,7 @@ router.put('/update/:table/:key/:id', async (req, res) => {
   const updates = req.body;
   const keys = Object.keys(updates);
   const values = Object.values(updates);
-
   const setClause = keys.map((k, i) => `${k} = $${i + 1}`).join(', ');
-
   try {
     await db.query(`UPDATE ${table} SET ${setClause} WHERE ${key} = $${keys.length + 1}`, [...values, id]);
     res.json({ message: `${table} record updated successfully` });
