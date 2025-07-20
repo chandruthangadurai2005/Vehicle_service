@@ -609,20 +609,22 @@
     handleForm("billing-form", "add-billing");
 
     document.getElementById("search-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const type = document.getElementById("search-type").value;
-      const query = document.getElementById("search-query").value;
+  e.preventDefault();
+  const type = document.getElementById("search-type").value;
+  const field = document.getElementById("search-field").value; // ADD THIS
+  const query = document.getElementById("search-query").value;
 
-      try {
-        const res = await fetch(`/api/search-${type}?query=${query}`);
-        const data = await res.json();
-        renderTable(data, type);
-        showAlert(`Found ${data.length} results`, "success");
-      } catch (err) {
-        showAlert("Search failed", "error");
-        console.error(err);
-      }
-    });
+  try {
+    const res = await fetch(`/api/search-${type}?field=${field}&query=${query}`);
+    const data = await res.json();
+    renderTable(data, type);
+    showAlert(`Found ${data.length} results`, "success");
+  } catch (err) {
+    showAlert("Search failed", "error");
+    console.error(err);
+  }
+});
+
 
     window.viewData = async function (table) {
       try {
