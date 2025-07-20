@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-// Add this on top if not already added
-
 
 const USERS = [
   { username: 'admin', password: 'admin123', role: 'admin' },
@@ -21,8 +19,6 @@ router.post('/login', (req, res) => {
   }
 });
 
-module.exports = router;
-
 // Helper for handling DB errors
 const handleDBError = (err, res) => {
   console.error('Database error:', err);
@@ -30,7 +26,7 @@ const handleDBError = (err, res) => {
 };
 
 // Entity list
-const entities = ['customer', 'vehicles', 'employee', 'service', 'inventory', 'billing'];
+const entities = ['customer', 'vehicles', 'employee', 'service', 'inventory', 'billing', 'branches'];
 
 // CRUD for all entities
 entities.forEach(entity => {
@@ -57,39 +53,6 @@ entities.forEach(entity => {
     }
   });
 });
-
-// ✅ Universal Search Route
-// Dynamic universal search route
-/*router.get('/search/:entity', async (req, res) => {
-  const { entity } = req.params;
-  const { field, query } = req.query;
-
-  const allowedEntities = ['customer', 'vehicles', 'employee', 'service', 'inventory', 'billing'];
-  const allowedFields = ['name', 'phone_no', 'email', 'vehicle_id', 'customer_id', 'emp_id']; // add as needed
-
-  if (!allowedEntities.includes(entity) || !field || !query) {
-    return res.status(400).json({ message: "Invalid search parameters." });
-  }
-
-  try {
-    const sql = `SELECT * FROM ${entity} WHERE ${field}::text ILIKE $1`;
-    const result = await db.query(sql, [`%${query}%`]);
-    res.json(result.rows);
-  } catch (err) {
-    console.error("Search error:", err);
-    res.status(500).json({ message: "Search failed." });
-  }
-});*/
-router.get("/branches", async (req, res) => {
-  try {
-    const result = await db.query("SELECT * FROM branches");
-    res.json(result.rows);
-  } catch (err) {
-    console.error("Error fetching branches:", err);
-    res.status(500).json({ message: "Failed to fetch branches" });
-  }
-});
-
 
 // Special route (custom update for service)
 router.put('/update-service/:id', async (req, res) => {

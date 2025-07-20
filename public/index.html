@@ -489,7 +489,6 @@
     <a href="/vehicle service center (3).pptx" download style="color:#00bcd4; text-decoration: underline;">📄 Download Project PPT</a>
 </div>
   <script>
-    if (!document.referrer.includes('login.html')) {
 document.addEventListener("DOMContentLoaded", function() {
   // ===== UI SETUP =====
   const sections = document.querySelectorAll(".form-section");
@@ -541,8 +540,7 @@ document.addEventListener("DOMContentLoaded", function() {
   handleForm("service-form", "add-service");
   handleForm("inventory-form", "add-inventory");
   handleForm("billing-form", "add-billing");
-  handleForm("branch-form", "branches");
-
+  handleForm("branch-form", "add-branches");
 
   // ===== SEARCH FUNCTIONALITY =====
   const searchForm = document.getElementById("search-form");
@@ -668,8 +666,6 @@ function showAlert(message, type = "success") {
   document.body.appendChild(alertDiv);
   setTimeout(() => alertDiv.remove(), 3000);
 }
-       window.location.href = '/login.html';
-  }
 </script>
 </body>
 </html>
