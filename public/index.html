@@ -458,271 +458,181 @@
     <a href="/vehicle service center (3).pptx" download style="color:#00bcd4; text-decoration: underline;">📄 Download Project PPT</a>
 </div>
   <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // UI Setup
-    const sections = document.querySelectorAll(".form-section");
-    const viewButtons = document.querySelectorAll(".view-buttons button");
-    
-    // Show first section by default
-    sections[0].classList.add("active");
-    
-    viewButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        sections.forEach(sec => sec.classList.remove("active"));
-        document.getElementById(btn.dataset.target).classList.add("active");
-      });
+document.addEventListener("DOMContentLoaded", function() {
+  // ===== UI SETUP =====
+  const sections = document.querySelectorAll(".form-section");
+  const viewButtons = document.querySelectorAll(".view-buttons button");
+  
+  // Show first section by default
+  if (sections.length > 0) sections[0].classList.add("active");
+  
+  // Section switching
+  viewButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      sections.forEach(sec => sec.classList.remove("active"));
+      const target = document.getElementById(btn.dataset.target);
+      if (target) target.classList.add("active");
     });
+  });
 
-    // Form Handler
-    const handleForm = async (formId, endpoint, method = "POST") => {
-      const form = document.getElementById(formId);
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        try {
-          const formData = new FormData(form);
-          const data = {};
-          formData.forEach((value, key) => data[key] = value);
-          
-          const res = await fetch(`/api/${endpoint}`, {
-            method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-          });
-          
-          const result = await res.json();
-          showAlert(result.message || "Operation successful", "success");
-          form.reset();
-        } catch (err) {
-          showAlert("Operation failed", "error");
-          console.error(err);
-        }
-      });
-    };
-
-    // Register all forms
-    handleForm("customer-form", "add-customer");
-    handleForm("vehicle-form", "add-vehicle");
-    handleForm("employee-form", "add-employee");
-    handleForm("service-form", "add-service");
-    handleForm("inventory-form", "add-inventory");
-    handleForm("billing-form", "add-billing");
-
-    // Search Form
-    document.getElementById("search-form").addEventListener("submit", async (e) => {
+  // ===== FORM HANDLING =====
+  const handleForm = (formId, endpoint) => {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const type = document.getElementById("search-type").value;
-      const query = document.getElementById("search-query").value;
-
       try {
-        const res = await fetch(`/api/search-${type}?query=${query}`);
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        const res = await fetch(`/api/${endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await res.json();
+        showAlert(result.message || "Operation successful", "success");
+        form.reset();
+      } catch (err) {
+        showAlert("Operation failed", "error");
+        console.error(err);
+      }
+    });
+  };
+
+  // Register all forms
+  handleForm("customer-form", "add-customer");
+  handleForm("vehicle-form", "add-vehicle");
+  handleForm("employee-form", "add-employee");
+  handleForm("service-form", "add-service");
+  handleForm("inventory-form", "add-inventory");
+  handleForm("billing-form", "add-billing");
+
+  // ===== SEARCH FUNCTIONALITY =====
+  const searchForm = document.getElementById("search-form");
+  if (searchForm) {
+    searchForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const type = document.getElementById("search-type")?.value;
+      const field = document.getElementById("search-field")?.value;
+      const query = document.getElementById("search-query")?.value;
+
+      if (!type || !query) return;
+      
+      try {
+        const url = field 
+          ? `/api/search-${type}?field=${field}&query=${query}`
+          : `/api/search-${type}?query=${query}`;
+          
+        const res = await fetch(url);
         const data = await res.json();
-        renderTable(data);
+        renderTable(data, type);
         showAlert(`Found ${data.length} results`, "success");
       } catch (err) {
         showAlert("Search failed", "error");
         console.error(err);
       }
     });
+  }
+});
 
-    // View data by table
-    window.viewData = async function(table) {
-      try {
-        const res = await fetch(`/api/${table}`);
-        const data = await res.json();
-        renderTable(data);
-        showAlert(`Loaded ${data.length} records`, "success");
-      } catch (err) {
-        showAlert(`Failed to load ${table}`, "error");
-        console.error(err);
-      }
-    };
+// ===== GLOBAL FUNCTIONS =====
+window.viewData = async function(table) {
+  try {
+    const res = await fetch(`/api/${table}`);
+    const data = await res.json();
+    renderTable(data, table);
+    showAlert(`Loaded ${data.length} records`, "success");
+  } catch (err) {
+    showAlert(`Failed to load ${table}`, "error");
+    console.error(err);
+  }
+};
 
-    // Render data table
-   function renderTable(data) {
-  const table = document.getElementById("result-table");
+function renderTable(data, table) {
+  const tableElem = document.getElementById("result-table");
+  if (!tableElem) return;
+
   if (!Array.isArray(data) || data.length === 0) {
-    table.innerHTML = "<tr><td colspan='10'>No data found</td></tr>";
+    tableElem.innerHTML = "<tr><td colspan='10'>No data found</td></tr>";
     return;
   }
 
   const headers = Object.keys(data[0]);
-  table.innerHTML = `
-    <thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead>
+  tableElem.innerHTML = `
+    <thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}<th>Actions</th></tr></thead>
     <tbody>
-      ${data.map(row => `<tr>${headers.map(h => `<td>${row[h]}</td>`).join("")}</tr>`).join("")}
-    </tbody>
-  `;
+      ${data.map(row => `
+        <tr>
+          ${headers.map(h => `<td contenteditable data-key="${h}">${row[h]}</td>`).join("")}
+          <td>
+            <button class="delete-btn" onclick="deleteRecord('${table}', '${getIdKey(table)}', '${row[getIdKey(table)]}')">Delete</button>
+            <button class="update-btn" onclick="updateRecord(this, '${table}', '${getIdKey(table)}', '${row[getIdKey(table)]}')">Update</button>
+          </td>
+        </tr>`
+      ).join("")}
+    </tbody>`;
 }
 
-
-    // Alert message
-    function showAlert(message, type = "success") {
-      const alertDiv = document.createElement("div");
-      alertDiv.className = `alert ${type}`;
-      alertDiv.textContent = message;
-      document.body.appendChild(alertDiv);
-      setTimeout(() => alertDiv.remove(), 3000);
-    }
-  });
-   
-  document.addEventListener("DOMContentLoaded", function () {
-    const sections = document.querySelectorAll(".form-section");
-    const viewButtons = document.querySelectorAll(".view-buttons button");
-    sections[0].classList.add("active");
-
-    viewButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        sections.forEach(sec => sec.classList.remove("active"));
-        document.getElementById(btn.dataset.target).classList.add("active");
-      });
-    });
-
-    const handleForm = (formId, endpoint, method = "POST") => {
-      const form = document.getElementById(formId);
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        try {
-          const formData = new FormData(form);
-          const data = {};
-          formData.forEach((value, key) => data[key] = value);
-
-          const res = await fetch(`/api/${endpoint}`, {
-            method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-          });
-
-          const result = await res.json();
-          showAlert(result.message || "Operation successful", "success");
-          form.reset();
-        } catch (err) {
-          showAlert("Operation failed", "error");
-          console.error(err);
-        }
-      });
-    };
-
-    handleForm("customer-form", "add-customer");
-    handleForm("vehicle-form", "add-vehicle");
-    handleForm("employee-form", "add-employee");
-    handleForm("service-form", "add-service");
-    handleForm("inventory-form", "add-inventory");
-    handleForm("billing-form", "add-billing");
-
-    document.getElementById("search-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const type = document.getElementById("search-type").value;
-  const field = document.getElementById("search-field").value; // ADD THIS
-  const query = document.getElementById("search-query").value;
-
+window.deleteRecord = async function(table, key, id) {
+  if (!confirm("Are you sure you want to delete this record?")) return;
   try {
-    const res = await fetch(`/api/search-${type}?field=${field}&query=${query}`);
-    const data = await res.json();
-    renderTable(data, type);
-    showAlert(`Found ${data.length} results`, "success");
+    const res = await fetch(`/api/delete/${table}/${key}/${id}`, { 
+      method: "DELETE" 
+    });
+    const result = await res.json();
+    showAlert(result.message, "success");
+    viewData(table);
   } catch (err) {
-    showAlert("Search failed", "error");
+    showAlert("Delete failed", "error");
     console.error(err);
   }
-});
+};
 
+window.updateRecord = async function(btn, table, key, id) {
+  const row = btn.closest("tr");
+  const cells = row.querySelectorAll("td[data-key]");
+  const data = {};
 
-    window.viewData = async function (table) {
-      try {
-        const res = await fetch(`/api/${table}`);
-        const data = await res.json();
-        renderTable(data, table);
-        showAlert(`Loaded ${data.length} records`, "success");
-      } catch (err) {
-        showAlert(`Failed to load ${table}`, "error");
-        console.error(err);
-      }
-    };
-
-    function renderTable(data, table) {
-      const tableElem = document.getElementById("result-table");
-      if (!Array.isArray(data) || data.length === 0) {
-        tableElem.innerHTML = "<tr><td colspan='10'>No data found</td></tr>";
-        return;
-      }
-
-      const headers = Object.keys(data[0]);
-      tableElem.innerHTML = `
-        <thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}<th>Actions</th></tr></thead>
-        <tbody>
-          ${data.map(row => {
-            return `<tr>
-              ${headers.map(h => `<td contenteditable data-key="${h}">${row[h]}</td>`).join("")}
-              <td>
-                <button class="delete-btn" onclick="deleteRecord('${table}', '${getIdKey(table)}', '${row[getIdKey(table)]}')">Delete</button>
-                <button class="update-btn" onclick="updateRecord(this, '${table}', '${getIdKey(table)}', '${row[getIdKey(table)]}')">Update</button>
-              </td>
-            </tr>`;
-          }).join("")}
-        </tbody>
-      `;
-    }
-
-    window.deleteRecord = async function (table, key, id) {
-      if (!confirm("Are you sure you want to delete this record?")) return;
-      try {
-        const res = await fetch(`/api/delete/${table}/${key}/${id}`, { method: "DELETE" });
-        const result = await res.json();
-        showAlert(result.message, "success");
-        viewData(table);
-      } catch (err) {
-        showAlert("Delete failed", "error");
-        console.error(err);
-      }
-    };
-
-    window.updateRecord = async function (btn, table, key, id) {
-      const row = btn.closest("tr");
-      const cells = row.querySelectorAll("td[data-key]");
-      const data = {};
-
-      cells.forEach(cell => {
-        data[cell.dataset.key] = cell.textContent.trim();
-      });
-
-      try {
-        const res = await fetch(`/api/update/${table}/${key}/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-
-        const result = await res.json();
-        showAlert(result.message, "success");
-      } catch (err) {
-        showAlert("Update failed", "error");
-        console.error(err);
-      }
-    };
-
-    function getIdKey(table) {
-      const idMap = {
-        customer: "customer_id",
-        vehicles: "vehicle_id",
-        employee: "emp_id",
-        service: "service_id",
-        inventory: "inventory_id",
-        billing: "bill_id"
-      };
-      return idMap[table];
-    }
-
-    function showAlert(message, type = "success") {
-      const alertDiv = document.createElement("div");
-      alertDiv.className = `alert ${type}`;
-      alertDiv.textContent = message;
-      document.body.appendChild(alertDiv);
-      setTimeout(() => alertDiv.remove(), 3000);
-    }
+  cells.forEach(cell => {
+    data[cell.dataset.key] = cell.textContent.trim();
   });
 
+  try {
+    const res = await fetch(`/api/update/${table}/${key}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    showAlert(result.message, "success");
+  } catch (err) {
+    showAlert("Update failed", "error");
+    console.error(err);
+  }
+};
 
+function getIdKey(table) {
+  const idMap = {
+    customer: "customer_id",
+    vehicles: "vehicle_id",
+    employee: "emp_id",
+    service: "service_id",
+    inventory: "inventory_id",
+    billing: "bill_id"
+  };
+  return idMap[table] || "id";
+}
+
+function showAlert(message, type = "success") {
+  const alertDiv = document.createElement("div");
+  alertDiv.className = `alert ${type}`;
+  alertDiv.textContent = message;
+  document.body.appendChild(alertDiv);
+  setTimeout(() => alertDiv.remove(), 3000);
+}
 </script>
-
 </body>
 </html>
