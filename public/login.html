@@ -1,57 +1,103 @@
-<!-- public/login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Login</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Vehicle Service Center</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      background-color: #1e1e2f;
+      background-color: #121826;
       color: #eee;
-      font-family: Arial, sans-serif;
-      display: flex;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       height: 100vh;
+      display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-    }
-    .login-box {
-      background-color: #2a2a3d;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #000;
-      width: 300px;
-    }
-    h2 {
       text-align: center;
-      margin-bottom: 1rem;
-      color: #00bcd4;
+      padding: 1rem;
     }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: #00acc1;
+      letter-spacing: 1px;
+    }
+
+    .login-box {
+      background-color: #1f2937;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      width: 100%;
+      max-width: 350px;
+    }
+
+    .login-box h2 {
+      color: #00d8ff;
+      margin-bottom: 1.5rem;
+      font-size: 1.3rem;
+    }
+
     input {
       width: 100%;
-      padding: 0.7rem;
+      padding: 0.75rem;
       margin-bottom: 1rem;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
+      background-color: #2e3a4e;
+      color: white;
+      font-size: 1rem;
     }
+
+    input::placeholder {
+      color: #aaa;
+    }
+
     button {
       width: 100%;
-      padding: 0.7rem;
+      padding: 0.75rem;
       background-color: #00bcd4;
       color: white;
       border: none;
       font-weight: bold;
-      border-radius: 4px;
+      font-size: 1rem;
+      border-radius: 6px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
+
+    button:hover {
+      background-color: #00acc1;
+    }
+
     .error {
       color: #f44336;
       text-align: center;
       margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 400px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .login-box {
+        padding: 1.5rem;
+      }
     }
   </style>
 </head>
 <body>
-<h1 style="text-align: center;">Vehicle Service Center</h1>
+  <h1>Vehicle Service Center</h1>
 
   <div class="login-box">
     <h2>Admin / Employee Login</h2>
@@ -66,46 +112,28 @@
   <script>
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      console.log('Login form submitted');
-      
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
       const errorBox = document.getElementById('errorBox');
-      
-      console.log('Username:', username, 'Password:', password);
-      
+
       try {
-        console.log('Sending login request...');
         const res = await fetch('/api/login', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ username, password })
         });
-        
-        console.log('Response status:', res.status);
+
         const data = await res.json();
-        console.log('Response data:', data);
-        
+
         if (data.success) {
-          console.log('Login successful, storing session and redirecting...');
-          // Store session ID in localStorage
           localStorage.setItem('sessionId', data.sessionId);
-          // Redirect with session ID as query parameter
           window.location.href = '/index.html?session=' + data.sessionId;
         } else {
-          console.log('Login failed:', data.message);
           errorBox.textContent = data.message;
         }
       } catch (error) {
-        console.error('Login error:', error);
         errorBox.textContent = 'Login failed. Please try again.';
       }
-    });
-    
-    // Add some debug info
-    console.log('Login page loaded');
-    window.addEventListener('load', () => {
-      console.log('Page fully loaded');
     });
   </script>
 </body>
