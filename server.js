@@ -17,6 +17,10 @@ app.use((req, res, next) => {
 // API routes
 const apiRoutes = require('./routes/api');
 app.use('/api', apiRoutes);
+// Serve login.html for root path
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
 
 // Frontend route
 app.get('*', (req, res) => {
