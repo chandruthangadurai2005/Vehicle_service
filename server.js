@@ -56,6 +56,8 @@ app.get('/login.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
+
+
 // Protected route for main application
 app.get('/index.html', requireAuth, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

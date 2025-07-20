@@ -64,24 +64,46 @@
   <script>
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      console.log('Login form submitted');
+      
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
       const errorBox = document.getElementById('errorBox');
-
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ username, password })
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        // Store session ID in localStorage
-        localStorage.setItem('sessionId', data.sessionId);
-        window.location.href = '/index.html';
-      } else {
-        errorBox.textContent = data.message;
+      
+      console.log('Username:', username, 'Password:', password);
+      
+      try {
+        console.log('Sending login request...');
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ username, password })
+        });
+        
+        console.log('Response status:', res.status);
+        const data = await res.json();
+        console.log('Response data:', data);
+        
+        if (data.success) {
+          console.log('Login successful, storing session and redirecting...');
+          // Store session ID in localStorage
+          localStorage.setItem('sessionId', data.sessionId);
+          // Redirect with session ID as query parameter
+          window.location.href = '/index.html?session=' + data.sessionId;
+        } else {
+          console.log('Login failed:', data.message);
+          errorBox.textContent = data.message;
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        errorBox.textContent = 'Login failed. Please try again.';
       }
+    });
+    
+    // Add some debug info
+    console.log('Login page loaded');
+    window.addEventListener('load', () => {
+      console.log('Page fully loaded');
     });
   </script>
 </body>
