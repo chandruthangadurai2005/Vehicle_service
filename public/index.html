@@ -241,6 +241,7 @@
     <h1>Vehicle Service Center Management</h1>
     <ul class="view-buttons">
       <li><button data-target="customer-section">Customers</button></li>
+      <li><button data-target="branches-section">Branches</button></li>
       <li><button data-target="vehicle-section">Vehicles</button></li>
       <li><button data-target="employee-section">Employees</button></li>
       <li><button data-target="service-section">Services</button></li>
@@ -279,6 +280,42 @@
       </form>
       <button class="view-btn" onclick="viewData('customer')">View All Customers</button>
     </section>
+   <!-- Branch Section -->
+<section class="form-section" id="branch-section">
+  <h2>Branch Management</h2>
+  <form id="branch-form">
+    <div>
+      <label for="branch_id">Branch ID</label>
+      <input type="number" id="branch_id" name="branch_id" required>
+    </div>
+    <div>
+      <label for="company_id">Company ID</label>
+      <input type="number" id="company_id" name="company_id" required>
+    </div>
+    <div>
+      <label for="manager">Manager Name</label>
+      <input type="text" id="manager" name="manager" required>
+    </div>
+    <div>
+      <label for="active_hours">Active Hours</label>
+      <input type="text" id="active_hours" name="active_hours" required>
+    </div>
+    <div>
+      <label for="phone_no">Phone Number</label>
+      <input type="text" id="phone_no" name="phone_no" required>
+    </div>
+    <div>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div>
+      <label for="address">Address</label>
+      <input type="text" id="address" name="address" required>
+    </div>
+    <button type="submit">Add Branch</button>
+  </form>
+  <button class="view-btn" onclick="viewData('branches')">View All Branches</button>
+</section>
 
     <!-- Vehicle Section -->
     <section class="form-section" id="vehicle-section">
@@ -509,6 +546,8 @@ document.addEventListener("DOMContentLoaded", function() {
   handleForm("service-form", "add-service");
   handleForm("inventory-form", "add-inventory");
   handleForm("billing-form", "add-billing");
+  handleForm("branch-form", "branches");
+
 
   // ===== SEARCH FUNCTIONALITY =====
   const searchForm = document.getElementById("search-form");
