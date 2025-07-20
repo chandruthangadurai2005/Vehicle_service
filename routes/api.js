@@ -116,5 +116,32 @@ router.get('/search-customer', async (req, res) => {
     res.status(500).json({ error: "Search failed" });
   }
 });
+// Universal DELETE
+router.delete('/delete/:table/:key/:id', async (req, res) => {
+  const { table, key, id } = req.params;
+  try {
+    await db.query(`DELETE FROM ${table} WHERE ${key} = $1`, [id]);
+    res.json({ message: `${table} record deleted successfully` });
+  } catch (err) {
+    handleDBError(err, res);
+  }
+});
+
+// Universal UPDATE
+router.put('/update/:table/:key/:id', async (req, res) => {
+  const { table, key, id } = req.params;
+  const updates = req.body;
+  const keys = Object.keys(updates);
+  const values = Object.values(updates);
+
+  const setClause = keys.map((k, i) => `${k} = $${i + 1}`).join(', ');
+
+  try {
+    await db.query(`UPDATE ${table} SET ${setClause} WHERE ${key} = $${keys.length + 1}`, [...values, id]);
+    res.json({ message: `${table} record updated successfully` });
+  } catch (err) {
+    handleDBError(err, res);
+  }
+});
 
 module.exports = router;
