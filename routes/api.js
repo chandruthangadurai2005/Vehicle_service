@@ -1,6 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+// Add this on top if not already added
+
+
+const USERS = [
+  { username: 'admin', password: 'admin123', role: 'admin' },
+  { username: 'employee', password: 'emp123', role: 'employee' }
+];
+
+router.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  const user = USERS.find(
+    u => u.username === username && u.password === password
+  );
+  if (user) {
+    res.json({ success: true, role: user.role });
+  } else {
+    res.json({ success: false, message: 'Invalid username or password' });
+  }
+});
+
+module.exports = router;
 
 // Helper for handling DB errors
 const handleDBError = (err, res) => {
