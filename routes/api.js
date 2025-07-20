@@ -7,16 +7,34 @@ const USERS = [
   { username: 'employee', password: 'emp123', role: 'employee' }
 ];
 
+// Access to sessions from server.js
+let sessions;
+
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
   const user = USERS.find(
     u => u.username === username && u.password === password
   );
   if (user) {
-    res.json({ success: true, role: user.role });
+    // Create a session
+    const sessionId = Date.now().toString() + Math.random().toString(36);
+    // Get sessions from app locals (we'll set this in server.js)
+    if (req.app.locals.sessions) {
+      req.app.locals.sessions.set(sessionId, { username: user.username, role: user.role });
+    }
+    res.json({ success: true, role: user.role, sessionId: sessionId });
   } else {
     res.json({ success: false, message: 'Invalid username or password' });
   }
+});
+
+// Logout route
+router.post('/logout', (req, res) => {
+  const sessionId = req.headers['x-session-id'];
+  if (sessionId && req.app.locals.sessions) {
+    req.app.locals.sessions.delete(sessionId);
+  }
+  res.json({ success: true });
 });
 
 // Helper for handling DB errors

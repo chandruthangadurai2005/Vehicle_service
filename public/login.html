@@ -76,6 +76,8 @@
 
       const data = await res.json();
       if (data.success) {
+        // Store session ID in localStorage
+        localStorage.setItem('sessionId', data.sessionId);
         window.location.href = '/index.html';
       } else {
         errorBox.textContent = data.message;
