@@ -59,6 +59,15 @@ entities.forEach(entity => {
     res.status(500).json({ message: "Search failed." });
   }
 });*/
+router.get("/branches", async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM branches");
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error fetching branches:", err);
+    res.status(500).json({ message: "Failed to fetch branches" });
+  }
+});
 
 
 // Special route (custom update for service)
