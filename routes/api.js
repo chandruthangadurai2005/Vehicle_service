@@ -39,7 +39,7 @@ entities.forEach(entity => {
 
 // ✅ Universal Search Route
 // Dynamic universal search route
-router.get('/search/:entity', async (req, res) => {
+/*router.get('/search/:entity', async (req, res) => {
   const { entity } = req.params;
   const { field, query } = req.query;
 
@@ -58,7 +58,7 @@ router.get('/search/:entity', async (req, res) => {
     console.error("Search error:", err);
     res.status(500).json({ message: "Search failed." });
   }
-});
+});*/
 
 
 // Special route (custom update for service)
