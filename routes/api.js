@@ -42,19 +42,28 @@ entities.forEach(entity => {
   });
 
   // Search
-  router.get(`/search-${entity}`, async (req, res) => {
-    try {
-      const { field, query } = req.query;
-      const result = await db.query(
-        `SELECT * FROM ${entity} WHERE ${field} ILIKE $1`,
-        [`%${query}%`]
-      );
-      res.json(result.rows);
-    } catch (err) {
-      handleDBError(err, res);
+ router.get('/search-:entity', async (req, res) => {
+  const { entity } = req.params;
+  const { field, query } = req.query;
+
+  try {
+    const allowedEntities = ['customer', 'vehicles', 'employee', 'service', 'inventory', 'billing'];
+    const allowedFields = ['name', 'id', 'phone_no', 'email', 'vehicle_id', 'customer_id']; // adjust as needed
+
+    if (!allowedEntities.includes(entity) || !field || !query) {
+      return res.status(400).json({ message: "Invalid search parameters." });
     }
-  });
+
+    // Sanitize input by preventing SQL injection
+    const sql = `SELECT * FROM ${entity} WHERE ${field}::text ILIKE $1`;
+    const result = await db.query(sql, [`%${query}%`]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Search failed." });
+  }
 });
+
 
 // Special routes
 router.put('/update-service/:id', async (req, res) => {
