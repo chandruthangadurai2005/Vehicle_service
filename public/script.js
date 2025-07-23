@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+  console.log('DOM loaded, starting script...'); // Debug
+  
   // Check user role and setup UI accordingly
   let userRole = 'visitor'; // default
   
@@ -6,17 +8,28 @@ document.addEventListener("DOMContentLoaded", function() {
   const urlParams = new URLSearchParams(window.location.search);
   const sessionId = urlParams.get('session') || localStorage.getItem('sessionId');
   
+  console.log('Session ID:', sessionId); // Debug
+  
   // Fetch user info and setup UI
   if (sessionId) {
+    console.log('Fetching user info...'); // Debug
     fetch('/api/user', {
       headers: { 'x-session-id': sessionId }
     })
-    .then(res => res.json())
+    .then(res => {
+      console.log('User API response status:', res.status); // Debug
+      return res.json();
+    })
     .then(data => {
+      console.log('User data received:', data); // Debug
       if (data.role) {
         userRole = data.role;
+        console.log('Setting up UI for role:', userRole); // Debug
         setupRoleBasedUI(userRole);
         updateUserInfo(data.username, data.role);
+      } else {
+        console.log('No role in data, using default visitor'); // Debug
+        setupRoleBasedUI('visitor');
       }
     })
     .catch(err => {
@@ -24,6 +37,9 @@ document.addEventListener("DOMContentLoaded", function() {
       // Redirect to login if session is invalid
       window.location.href = '/login.html';
     });
+  } else {
+    console.log('No session ID found, redirecting to login'); // Debug
+    window.location.href = '/login.html';
   }
   
   // UI Setup
@@ -54,6 +70,14 @@ document.addEventListener("DOMContentLoaded", function() {
   if (viewButtons.length > 0) {
     viewButtons[0].style.backgroundColor = "#0353e9";
   }
+
+  // TEMPORARY: Show all admin forms for testing
+  console.log('TEMP: Showing all admin forms for testing'); // Debug
+  const allAdminForms = document.querySelectorAll('.admin-only');
+  allAdminForms.forEach(form => {
+    form.classList.remove('hidden');
+    console.log('TEMP: Showing form:', form); // Debug
+  });
 
   // Form Handler with session authentication
   const handleForm = async (formId, endpoint, method = "POST") => {
