@@ -150,15 +150,16 @@ document.addEventListener("DOMContentLoaded", function() {
   
   // Role-based UI setup
   function setupRoleBasedUI(role) {
-    const adminOnlyElements = document.querySelectorAll('.admin-only');
-    const visitorOnlyElements = document.querySelectorAll('.visitor-only');
+    const body = document.body;
     
+    // Remove any existing role classes
+    body.classList.remove('admin-mode', 'visitor-mode');
+    
+    // Add the appropriate role class
     if (role === 'admin') {
-      adminOnlyElements.forEach(el => el.style.display = 'block');
-      visitorOnlyElements.forEach(el => el.style.display = 'none');
+      body.classList.add('admin-mode');
     } else {
-      adminOnlyElements.forEach(el => el.style.display = 'none');
-      visitorOnlyElements.forEach(el => el.style.display = 'block');
+      body.classList.add('visitor-mode');
     }
   }
   

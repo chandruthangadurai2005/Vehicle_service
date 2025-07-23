@@ -212,12 +212,12 @@
   }
 
   /* Role-based visibility */
-  .admin-only {
-    display: none;
+  body:not(.admin-mode) .admin-only {
+    display: none !important;
   }
   
-  .visitor-only {
-    display: none;
+  body:not(.visitor-mode) .visitor-only {
+    display: none !important;
   }
 
   @media (max-width: 768px) {
