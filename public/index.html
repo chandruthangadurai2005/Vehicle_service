@@ -211,13 +211,18 @@
     margin-top: 2rem;
   }
 
-  /* Role-based visibility */
+  /* Role-based visibility - TEMPORARILY DISABLED FOR TESTING */
   .admin-only.hidden {
-    display: none !important;
+    /* display: none !important; */
   }
   
   .visitor-only.hidden {
-    display: none !important;
+    /* display: none !important; */
+  }
+  
+  /* TEMP: Force show all forms for testing */
+  .admin-only {
+    display: block !important;
   }
 
   @media (max-width: 768px) {
@@ -240,6 +245,18 @@
 
 </head>
 <body>
+  <script>
+    // TEMP: Simple test to see if any JavaScript runs
+    console.log('🔧 TEST: JavaScript is executing');
+    setTimeout(() => {
+      alert('🔧 TEST: If you see this alert, JavaScript is working on this page');
+    }, 1000);
+  </script>
+  <!-- TEMP: Visible test indicator -->
+  <div style="background: red; color: white; padding: 10px; text-align: center; font-weight: bold;">
+    🔧 TESTING MODE: If you can see this red bar, the page is loading correctly
+  </div>
+  
   <nav class="navbar">
     <h1>Vehicle Service Center Management</h1>
     <div id="user-info" style="color: #00acc1; font-weight: bold;">
