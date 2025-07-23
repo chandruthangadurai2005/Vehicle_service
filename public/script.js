@@ -1,12 +1,13 @@
+// Global variables for session management
+let sessionId = null;
+let userRole = 'visitor'; // default
+
 document.addEventListener("DOMContentLoaded", function() {
   console.log('DOM loaded, starting script...'); // Debug
   
-  // Check user role and setup UI accordingly
-  let userRole = 'visitor'; // default
-  
   // Get session ID from URL or localStorage
   const urlParams = new URLSearchParams(window.location.search);
-  const sessionId = urlParams.get('session') || localStorage.getItem('sessionId');
+  sessionId = urlParams.get('session') || localStorage.getItem('sessionId');
   
   console.log('Session ID:', sessionId); // Debug
   
@@ -88,6 +89,8 @@ document.addEventListener("DOMContentLoaded", function() {
       e.preventDefault();
       try {
         const data = Object.fromEntries(new FormData(form));
+        console.log('Submitting form:', formId, 'to endpoint:', endpoint, 'with session:', sessionId); // Debug
+        
         const res = await fetch(`/api/${endpoint}`, {
           method,
           headers: { 
@@ -96,7 +99,10 @@ document.addEventListener("DOMContentLoaded", function() {
           },
           body: JSON.stringify(data)
         });
+        
+        console.log('API response status:', res.status); // Debug
         const result = await res.json();
+        console.log('API response data:', result); // Debug
         
         if (res.status === 403) {
           showAlert("Access denied. You don't have permission for this action.", "error");
