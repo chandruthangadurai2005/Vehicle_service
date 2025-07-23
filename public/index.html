@@ -212,11 +212,11 @@
   }
 
   /* Role-based visibility */
-  body:not(.admin-mode) .admin-only {
+  .admin-only.hidden {
     display: none !important;
   }
   
-  body:not(.visitor-mode) .visitor-only {
+  .visitor-only.hidden {
     display: none !important;
   }
 
@@ -261,7 +261,7 @@
     <!-- Customer Section -->
     <section class="form-section" id="customer-section">
       <h2>Customer Management</h2>
-      <form id="customer-form" class="admin-only">
+      <form id="customer-form" class="admin-only hidden">
         <div>
           <label for="name">Name</label>
           <input type="text" id="name" name="name" required>
@@ -284,7 +284,7 @@
         </div>
         <button type="submit">Add Customer</button>
       </form>
-      <div class="visitor-only" style="background-color: #1f2937; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #00acc1;">
+      <div class="visitor-only hidden" style="background-color: #1f2937; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #00acc1;">
         <p><strong>Visitor Mode:</strong> You can only view data. Add/Edit/Delete functions are restricted to admin users.</p>
       </div>
       <button class="view-btn" onclick="viewData('customer')">View All Customers</button>
@@ -292,7 +292,7 @@
    <!-- Branch Section -->
 <section class="form-section" id="branch-section">
   <h2>Branch Management</h2>
-  <form id="branch-form" class="admin-only">
+  <form id="branch-form" class="admin-only hidden">
     <div>
       <label for="branch_id">Branch ID</label>
       <input type="number" id="branch_id" name="branch_id" required>
@@ -323,7 +323,7 @@
     </div>
     <button type="submit">Add Branch</button>
   </form>
-  <div class="visitor-only" style="background-color: #1f2937; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #00acc1;">
+  <div class="visitor-only hidden" style="background-color: #1f2937; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #00acc1;">
     <p><strong>Visitor Mode:</strong> You can only view data. Add/Edit/Delete functions are restricted to admin users.</p>
   </div>
   <button class="view-btn" onclick="viewData('branches')">View All Branches</button>
@@ -332,7 +332,7 @@
     <!-- Vehicle Section -->
     <section class="form-section" id="vehicle-section">
       <h2>Vehicle Management</h2>
-      <form id="vehicle-form" class="admin-only">
+      <form id="vehicle-form" class="admin-only hidden">
         <div>
           <label for="customer_id">Customer ID</label>
           <input type="number" id="customer_id" name="customer_id" required>
@@ -347,7 +347,7 @@
         </div>
         <button type="submit">Add Vehicle</button>
       </form>
-      <div class="visitor-only" style="background-color: #1f2937; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #00acc1;">
+      <div class="visitor-only hidden" style="background-color: #1f2937; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #00acc1;">
         <p><strong>Visitor Mode:</strong> You can only view data. Add/Edit/Delete functions are restricted to admin users.</p>
       </div>
       <button class="view-btn" onclick="viewData('vehicles')">View All Vehicles</button>
@@ -356,7 +356,7 @@
     <!-- Employee Section -->
     <section class="form-section" id="employee-section">
       <h2>Employee Management</h2>
-      <form id="employee-form" class="admin-only">
+      <form id="employee-form" class="admin-only hidden">
         <div>
           <label for="branch_id_emp">Branch ID</label>
           <input type="number" id="branch_id_emp" name="branch_id" required>
@@ -375,7 +375,7 @@
         </div>
         <button type="submit">Add Employee</button>
       </form>
-      <div class="visitor-only" style="background-color: #1f2937; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #00acc1;">
+      <div class="visitor-only hidden" style="background-color: #1f2937; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #00acc1;">
         <p><strong>Visitor Mode:</strong> You can only view data. Add/Edit/Delete functions are restricted to admin users.</p>
       </div>
       <button class="view-btn" onclick="viewData('employee')">View All Employees</button>
@@ -384,7 +384,7 @@
     <!-- Service Section -->
     <section class="form-section" id="service-section">
       <h2>Service Management</h2>
-      <form id="service-form" class="admin-only">
+      <form id="service-form" class="admin-only hidden">
         <div>
           <label for="emp_id">Employee ID</label>
           <input type="number" id="emp_id" name="emp_id" required>
@@ -403,7 +403,7 @@
         </div>
         <button type="submit">Add Service</button>
       </form>
-      <div class="visitor-only" style="background-color: #1f2937; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #00acc1;">
+      <div class="visitor-only hidden" style="background-color: #1f2937; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #00acc1;">
         <p><strong>Visitor Mode:</strong> You can only view data. Add/Edit/Delete functions are restricted to admin users.</p>
       </div>
       <button class="view-btn" onclick="viewData('service')">View All Services</button>
@@ -412,7 +412,7 @@
     <!-- Inventory Section -->
     <section class="form-section" id="inventory-section">
       <h2>Inventory Management</h2>
-      <form id="inventory-form" class="admin-only">
+      <form id="inventory-form" class="admin-only hidden">
         <div>
           <label for="branch_id_inv">Branch ID</label>
           <input type="number" id="branch_id_inv" name="branch_id" required>
@@ -427,7 +427,7 @@
         </div>
         <button type="submit">Add Inventory</button>
       </form>
-      <div class="visitor-only" style="background-color: #1f2937; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #00acc1;">
+      <div class="visitor-only hidden" style="background-color: #1f2937; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #00acc1;">
         <p><strong>Visitor Mode:</strong> You can only view data. Add/Edit/Delete functions are restricted to admin users.</p>
       </div>
       <button class="view-btn" onclick="viewData('inventory')">View All Inventory</button>
@@ -436,7 +436,7 @@
     <!-- Billing Section -->
     <section class="form-section" id="billing-section">
       <h2>Billing Management</h2>
-      <form id="billing-form" class="admin-only">
+      <form id="billing-form" class="admin-only hidden">
         <div>
           <label for="service_id">Service ID</label>
           <input type="number" id="service_id" name="service_id" required>
@@ -456,7 +456,7 @@
         </div>
         <button type="submit">Add Billing</button>
       </form>
-      <div class="visitor-only" style="background-color: #1f2937; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #00acc1;">
+      <div class="visitor-only hidden" style="background-color: #1f2937; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #00acc1;">
         <p><strong>Visitor Mode:</strong> You can only view data. Add/Edit/Delete functions are restricted to admin users.</p>
       </div>
       <button class="view-btn" onclick="viewData('billing')">View All Bills</button>
