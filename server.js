@@ -40,6 +40,7 @@ app.use('/api', apiRoutes);
 const requireAuth = (req, res, next) => {
   const sessionId = req.headers['x-session-id'] || req.query.session;
   if (sessionId && sessions.has(sessionId)) {
+    req.user = sessions.get(sessionId);
     next();
   } else {
     res.redirect('/');

@@ -4,11 +4,33 @@ const db = require('../db');
 
 const USERS = [
   { username: 'admin', password: 'admin123', role: 'admin' },
-  { username: 'employee', password: 'emp123', role: 'employee' }
+  { username: 'visitor', password: 'visitor123', role: 'visitor' }
 ];
 
 // Access to sessions from server.js
 let sessions;
+
+// Role-based access control middleware
+const requireRole = (allowedRoles) => {
+  return (req, res, next) => {
+    const sessionId = req.headers['x-session-id'] || req.query.session;
+    if (!sessionId || !req.app.locals.sessions) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    
+    const session = req.app.locals.sessions.get(sessionId);
+    if (!session) {
+      return res.status(401).json({ error: 'Invalid session' });
+    }
+    
+    if (!allowedRoles.includes(session.role)) {
+      return res.status(403).json({ error: 'Access denied. Insufficient permissions.' });
+    }
+    
+    req.user = session;
+    next();
+  };
+};
 
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
@@ -46,10 +68,25 @@ const handleDBError = (err, res) => {
 // Entity list
 const entities = ['customer', 'vehicles', 'employee', 'service', 'inventory', 'billing', 'branches'];
 
+// Route to get current user info
+router.get('/user', (req, res) => {
+  const sessionId = req.headers['x-session-id'] || req.query.session;
+  if (!sessionId || !req.app.locals.sessions) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+  
+  const session = req.app.locals.sessions.get(sessionId);
+  if (!session) {
+    return res.status(401).json({ error: 'Invalid session' });
+  }
+  
+  res.json({ username: session.username, role: session.role });
+});
+
 // CRUD for all entities
 entities.forEach(entity => {
-  // Create
-  router.post(`/add-${entity}`, async (req, res) => {
+  // Create (admin only)
+  router.post(`/add-${entity}`, requireRole(['admin']), async (req, res) => {
     try {
       const columns = Object.keys(req.body).join(', ');
       const values = Object.values(req.body);
@@ -61,8 +98,8 @@ entities.forEach(entity => {
     }
   });
 
-  // Read all
-  router.get(`/${entity}`, async (req, res) => {
+  // Read all (both admin and visitor can view)
+  router.get(`/${entity}`, requireRole(['admin', 'visitor']), async (req, res) => {
     try {
       const result = await db.query(`SELECT * FROM ${entity}`);
       res.json(result.rows);
@@ -72,8 +109,8 @@ entities.forEach(entity => {
   });
 });
 
-// Special route (custom update for service)
-router.put('/update-service/:id', async (req, res) => {
+// Special route (custom update for service) - admin only
+router.put('/update-service/:id', requireRole(['admin']), async (req, res) => {
   const { id } = req.params;
   const { description, emp_id } = req.body;
   try {
@@ -87,8 +124,8 @@ router.put('/update-service/:id', async (req, res) => {
   }
 });
 
-// Universal DELETE
-router.delete('/delete/:table/:key/:id', async (req, res) => {
+// Universal DELETE - admin only
+router.delete('/delete/:table/:key/:id', requireRole(['admin']), async (req, res) => {
   const { table, key, id } = req.params;
   try {
     await db.query(`DELETE FROM ${table} WHERE ${key} = $1`, [id]);
@@ -98,8 +135,8 @@ router.delete('/delete/:table/:key/:id', async (req, res) => {
   }
 });
 
-// Universal UPDATE
-router.put('/update/:table/:key/:id', async (req, res) => {
+// Universal UPDATE - admin only
+router.put('/update/:table/:key/:id', requireRole(['admin']), async (req, res) => {
   const { table, key, id } = req.params;
   const updates = req.body;
   const keys = Object.keys(updates);
