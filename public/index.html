@@ -211,13 +211,18 @@
     margin-top: 2rem;
   }
 
-  /* Role-based visibility */
+  /* Role-based visibility - TEMPORARILY DISABLED FOR TESTING */
   .admin-only.hidden {
-    display: none !important;
+    /* display: none !important; */
   }
   
   .visitor-only.hidden {
-    display: none !important;
+    /* display: none !important; */
+  }
+  
+  /* TEMP: Force show all forms for testing */
+  .admin-only {
+    display: block !important;
   }
 
   @media (max-width: 768px) {

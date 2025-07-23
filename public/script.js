@@ -60,10 +60,11 @@ document.addEventListener("DOMContentLoaded", function() {
     viewButtons[0].style.backgroundColor = "#0353e9";
   }
 
-  // Ensure role-based UI is applied after sections are set up
-  if (userRole) {
-    setupRoleBasedUI(userRole);
-  }
+  // TEMPORARY: Show all admin forms for testing
+  const allAdminForms = document.querySelectorAll('.admin-only');
+  allAdminForms.forEach(form => {
+    form.classList.remove('hidden');
+  });
 
 
 
@@ -180,21 +181,17 @@ document.addEventListener("DOMContentLoaded", function() {
   
   // Role-based UI setup
   function setupRoleBasedUI(role) {
-    console.log('TEMP DEBUG: Setting up UI for role:', role); // Temporary debug
     const adminOnlyElements = document.querySelectorAll('.admin-only');
     const visitorOnlyElements = document.querySelectorAll('.visitor-only');
-    console.log('TEMP DEBUG: Found', adminOnlyElements.length, 'admin elements and', visitorOnlyElements.length, 'visitor elements'); // Temporary debug
     
     if (role === 'admin') {
       // Show admin elements, hide visitor elements
       adminOnlyElements.forEach(el => {
         el.classList.remove('hidden');
-        console.log('TEMP DEBUG: Showing admin element:', el.id || el.tagName); // Temporary debug
       });
       visitorOnlyElements.forEach(el => {
         el.classList.add('hidden');
       });
-      console.log('TEMP DEBUG: Admin setup complete'); // Temporary debug
     } else {
       // Hide admin elements, show visitor elements
       adminOnlyElements.forEach(el => {
@@ -202,9 +199,7 @@ document.addEventListener("DOMContentLoaded", function() {
       });
       visitorOnlyElements.forEach(el => {
         el.classList.remove('hidden');
-        console.log('TEMP DEBUG: Showing visitor element:', el.id || el.tagName); // Temporary debug
       });
-      console.log('TEMP DEBUG: Visitor setup complete'); // Temporary debug
     }
   }
   
