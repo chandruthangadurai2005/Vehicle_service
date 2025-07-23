@@ -3,33 +3,22 @@ let sessionId = null;
 let userRole = 'visitor'; // default
 
 document.addEventListener("DOMContentLoaded", function() {
-  console.log('DOM loaded, starting script...'); // Debug
-  
   // Get session ID from URL or localStorage
   const urlParams = new URLSearchParams(window.location.search);
   sessionId = urlParams.get('session') || localStorage.getItem('sessionId');
   
-  console.log('Session ID:', sessionId); // Debug
-  
   // Fetch user info and setup UI
   if (sessionId) {
-    console.log('Fetching user info...'); // Debug
     fetch('/api/user', {
       headers: { 'x-session-id': sessionId }
     })
-    .then(res => {
-      console.log('User API response status:', res.status); // Debug
-      return res.json();
-    })
+    .then(res => res.json())
     .then(data => {
-      console.log('User data received:', data); // Debug
       if (data.role) {
         userRole = data.role;
-        console.log('Setting up UI for role:', userRole); // Debug
         setupRoleBasedUI(userRole);
         updateUserInfo(data.username, data.role);
       } else {
-        console.log('No role in data, using default visitor'); // Debug
         setupRoleBasedUI('visitor');
       }
     })
@@ -39,7 +28,6 @@ document.addEventListener("DOMContentLoaded", function() {
       window.location.href = '/login.html';
     });
   } else {
-    console.log('No session ID found, redirecting to login'); // Debug
     window.location.href = '/login.html';
   }
   
@@ -72,13 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
     viewButtons[0].style.backgroundColor = "#0353e9";
   }
 
-  // TEMPORARY: Show all admin forms for testing
-  console.log('TEMP: Showing all admin forms for testing'); // Debug
-  const allAdminForms = document.querySelectorAll('.admin-only');
-  allAdminForms.forEach(form => {
-    form.classList.remove('hidden');
-    console.log('TEMP: Showing form:', form); // Debug
-  });
+
 
   // Form Handler with session authentication
   const handleForm = async (formId, endpoint, method = "POST") => {
@@ -89,8 +71,6 @@ document.addEventListener("DOMContentLoaded", function() {
       e.preventDefault();
       try {
         const data = Object.fromEntries(new FormData(form));
-        console.log('Submitting form:', formId, 'to endpoint:', endpoint, 'with session:', sessionId); // Debug
-        
         const res = await fetch(`/api/${endpoint}`, {
           method,
           headers: { 
@@ -99,10 +79,7 @@ document.addEventListener("DOMContentLoaded", function() {
           },
           body: JSON.stringify(data)
         });
-        
-        console.log('API response status:', res.status); // Debug
         const result = await res.json();
-        console.log('API response data:', result); // Debug
         
         if (res.status === 403) {
           showAlert("Access denied. You don't have permission for this action.", "error");
@@ -198,8 +175,6 @@ document.addEventListener("DOMContentLoaded", function() {
   
   // Role-based UI setup
   function setupRoleBasedUI(role) {
-    console.log('Setting up UI for role:', role); // Debug log
-    
     const adminOnlyElements = document.querySelectorAll('.admin-only');
     const visitorOnlyElements = document.querySelectorAll('.visitor-only');
     
@@ -207,7 +182,6 @@ document.addEventListener("DOMContentLoaded", function() {
       // Show admin elements, hide visitor elements
       adminOnlyElements.forEach(el => {
         el.classList.remove('hidden');
-        console.log('Showing admin element:', el); // Debug log
       });
       visitorOnlyElements.forEach(el => {
         el.classList.add('hidden');
@@ -219,7 +193,6 @@ document.addEventListener("DOMContentLoaded", function() {
       });
       visitorOnlyElements.forEach(el => {
         el.classList.remove('hidden');
-        console.log('Showing visitor element:', el); // Debug log
       });
     }
   }
