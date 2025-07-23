@@ -32,10 +32,28 @@ document.addEventListener("DOMContentLoaded", function() {
   
   viewButtons.forEach(btn => {
     btn.addEventListener("click", () => {
+      // Hide all sections
       sections.forEach(sec => sec.style.display = "none");
-      document.getElementById(btn.dataset.target).style.display = "block";
+      
+      // Reset all button styles
+      viewButtons.forEach(b => b.style.backgroundColor = "");
+      
+      // Show target section and highlight button
+      const targetSection = document.getElementById(btn.dataset.target);
+      if (targetSection) {
+        targetSection.style.display = "block";
+        btn.style.backgroundColor = "#0353e9";
+      }
     });
   });
+
+  // Show the first section by default and highlight the first button
+  if (sections.length > 0) {
+    sections[0].style.display = "block";
+  }
+  if (viewButtons.length > 0) {
+    viewButtons[0].style.backgroundColor = "#0353e9";
+  }
 
   // Form Handler with session authentication
   const handleForm = async (formId, endpoint, method = "POST") => {
