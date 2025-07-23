@@ -166,10 +166,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function updateUserInfo(username, role) {
     const userInfo = document.getElementById('user-info');
     if (userInfo) {
-      userInfo.innerHTML = `
-        <span>Welcome, ${username} (${role})</span>
-        <button onclick="logout()" style="margin-left: 10px; background: #da1e28; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Logout</button>
-      `;
+      userInfo.innerHTML = `<span>Welcome, ${username} (${role})</span>`;
     }
   }
   
